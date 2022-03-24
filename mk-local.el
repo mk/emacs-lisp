@@ -1,3 +1,4 @@
+
 ;; my customizations on Jack Rusher's excellect emacs config
 ;; see https://github.com/jackrusher/dotemacs
 ;; This lives in ~/.emacs/lisp/
@@ -40,11 +41,6 @@
 (projectile-mode +1)
 (setq projectile-indexing-method 'hybrid)
 
-;; clj-kondo
-(use-package flycheck :ensure t :init (global-flycheck-mode))
-(use-package flycheck-clj-kondo :ensure t)
-(use-package clojure-mode :ensure t :config (require 'flycheck-clj-kondo))
-(use-package clojurescript-mode :ensure t :config (require 'flycheck-clj-kondo))
 
 ;; moving between open buffers
 (global-set-key (kbd "C-s-<left>") 'previous-buffer)
@@ -56,12 +52,14 @@
 (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
 (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
 
+(setq cider-save-file-on-load 't)
+
 ;; don't annoy me
 (setq magit-save-repository-buffers 'dontask)
 (setq cider-prompt-for-symbol nil)
 
 ;; Disable pretty lambda and function symbols
-(global-prettify-symbols-mode 0)
+(global-prettify-symbols-mode 1)
 
 ;; Cursor
 (setq-default cursor-type 'bar)
@@ -93,9 +91,20 @@
 (global-set-key (kbd "s-]") 'shift-right)
 (global-set-key (kbd "s-[") 'shift-left)
 ;; Nextjournal-specific functions
-(eval-after-load 'clojure-mode
-  '(progn
-     ;; shift+enter to eval form and refresh
-     (define-key clojure-mode-map (kbd "<S-return>") 'nextjournal/eval-defun-at-point-and-refresh)))
+
+(global-set-key (kbd "C-c C-g") 'magit)
 
 (setq geiser-racket-binary "/Applications/Racket v7.8/bin/racket")
+
+(defun clerk-show ()
+  (interactive)
+  (save-buffer)
+  (let
+      ((filename
+        (buffer-file-name)))
+    (when filename
+      (cider-interactive-eval
+       (concat "(nextjournal.clerk/show! \"" filename "\")")))))
+
+(define-key clojure-mode-map  (kbd "<M-return>") 'clerk-show)
+(define-key markdown-mode-map (kbd "<M-return>") 'clerk-show)
