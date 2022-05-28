@@ -59,7 +59,7 @@
 (setq cider-prompt-for-symbol nil)
 
 ;; Disable pretty lambda and function symbols
-(global-prettify-symbols-mode 1)
+(global-prettify-symbols-mode nil)
 
 ;; Cursor
 (setq-default cursor-type 'bar)
@@ -108,3 +108,22 @@
 
 (define-key clojure-mode-map  (kbd "<M-return>") 'clerk-show)
 (define-key markdown-mode-map (kbd "<M-return>") 'clerk-show)
+
+
+;; from https://github.com/corgi-emacs/corgi-packages/blob/449e5120e4743127659643e4b1e89d037c5b9bcf/corgi-clojure/corgi-clojure.el#L119-L132
+(defun corgi/around-cider--choose-reusable-repl-buffer (_command _params)
+  "Redefine cider--choose-reusable-repl-buffer to something more
+sensible. If any dead REPL buffers exist when creating a new one
+then simply delete them first. Return nil so `cider-create-repl'
+creates a new one. Don't unnecessarily bother the user."
+  (seq-do #'kill-buffer
+          (seq-filter (lambda (b)
+                        (with-current-buffer b
+                          (and (derived-mode-p 'cider-repl-mode)
+                               (not (process-live-p (get-buffer-process b))))))
+                      (buffer-list)))
+  nil)
+
+(advice-add #'cider--choose-reusable-repl-buffer :around #'corgi/around-cider--choose-reusable-repl-buffer)
+
+(setq exec-path (append exec-path '("/opt/homebrew/bin")))
