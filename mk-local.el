@@ -26,11 +26,6 @@
 ;; I’d rather get a fuzzy-searchable list of function definitions
 (global-set-key (kbd "s-p") 'imenu)
 
-;; Fuzzy-find files in project as you type
-(require 'projectile)
-(global-set-key (kbd "s-t") 'projectile-find-file)
-(projectile-mode +1)
-
 ;; Search in project with ag
 (require 'counsel-projectile)
 (global-set-key (kbd "s-F") 'counsel-projectile-ag)
@@ -59,7 +54,7 @@
 (setq global-auto-revert-mode 't)
 (setq cider-prompt-for-symbol nil)
 
-;; Disable pretty lambda and function symbols
+;; Disable pretty lambda and function symbols as it breaks formatting
 (global-prettify-symbols-mode 0)
 
 ;; Cursor
