@@ -56,10 +56,11 @@
 
 ;; don't annoy me
 (setq magit-save-repository-buffers 'dontask)
+(setq global-auto-revert-mode 't)
 (setq cider-prompt-for-symbol nil)
 
 ;; Disable pretty lambda and function symbols
-(global-prettify-symbols-mode nil)
+(global-prettify-symbols-mode 0)
 
 ;; Cursor
 (setq-default cursor-type 'bar)
@@ -125,5 +126,16 @@ creates a new one. Don't unnecessarily bother the user."
   nil)
 
 (advice-add #'cider--choose-reusable-repl-buffer :around #'corgi/around-cider--choose-reusable-repl-buffer)
+
+;; for nbb and other cljs repls not being implemented on top of Clojure
+;; from https://github.com/clojure-emacs/cider/issues/3061#issuecomment-1114041848
+(cider-register-cljs-repl-type 'plain-cljs "(+ 1 2 3)")
+
+(defun mm/cider-connected-hook ()
+  (when (eq 'plain-cljs cider-cljs-repl-type)
+    (setq-local cider-show-error-buffer nil)
+    (cider-set-repl-type 'cljs)))
+
+(add-hook 'cider-connected-hook #'mm/cider-connected-hook)
 
 (setq exec-path (append exec-path '("/opt/homebrew/bin")))
