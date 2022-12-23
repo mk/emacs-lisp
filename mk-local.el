@@ -19,6 +19,12 @@
 (use-package counsel-projectile   :ensure t)
 (use-package projectile           :ensure t)
 
+
+(add-hook 'focus-out-hook (lambda ()
+                            (save-some-buffers t)))
+
+(setq-default show-trailing-whitespace t)
+
 (require 'counsel-projectile)
 (global-set-key (kbd "s-F") 'counsel-projectile-ag)
 
@@ -46,6 +52,11 @@
 ;; aggressive indent mode for LISPs
 (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
 (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
+
+(use-package flycheck-clj-kondo :ensure t)
+(use-package clojure-mode :ensure t :config (require 'flycheck-clj-kondo))
+(global-set-key (kbd "C-c C-n") 'flycheck-next-error)
+
 
 (setq cider-save-file-on-load 't)
 
@@ -122,15 +133,18 @@ creates a new one. Don't unnecessarily bother the user."
 
 (advice-add #'cider--choose-reusable-repl-buffer :around #'corgi/around-cider--choose-reusable-repl-buffer)
 
-;; for nbb and other cljs repls not being implemented on top of Clojure
-;; from https://github.com/clojure-emacs/cider/issues/3061#issuecomment-1114041848
-(cider-register-cljs-repl-type 'plain-cljs "(+ 1 2 3)")
+;; (setq exec-path (append exec-path '("/opt/homebrew/bin")))
 
-(defun mm/cider-connected-hook ()
-  (when (eq 'plain-cljs cider-cljs-repl-type)
-    (setq-local cider-show-error-buffer nil)
-    (cider-set-repl-type 'cljs)))
 
-(add-hook 'cider-connected-hook #'mm/cider-connected-hook)
+(setq lsp-headerline-breadcrumb-enable nil)
 
-(setq exec-path (append exec-path '("/opt/homebrew/bin")))
+(use-package exec-path-from-shell)
+
+(progn
+  (setenv "SHELL" "/opt/homebrew/bin/fish")
+  (exec-path-from-shell-initialize)
+  (exec-path-from-shell-copy-envs
+   '("PATH" "JAVA_HOME")))
+
+(use-package diff-hl)
+(global-diff-hl-mode)
