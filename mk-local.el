@@ -23,8 +23,6 @@
 (add-hook 'focus-out-hook (lambda ()
                             (save-some-buffers t)))
 
-(setq-default show-trailing-whitespace t)
-
 (require 'counsel-projectile)
 (global-set-key (kbd "s-F") 'counsel-projectile-ag)
 
@@ -148,3 +146,4 @@ creates a new one. Don't unnecessarily bother the user."
 
 (use-package diff-hl)
 (global-diff-hl-mode)
+
