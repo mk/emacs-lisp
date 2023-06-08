@@ -147,3 +147,10 @@ creates a new one. Don't unnecessarily bother the user."
 (use-package diff-hl)
 (global-diff-hl-mode)
 
+(defun toggle-presentation-mode ()
+  (interactive)
+  (if (equal
+       (alist-get 'font (cadr (cadr (current-frame-configuration))))
+       "-*-JetBrains Mono-normal-normal-normal-*-26-*-*-*-m-0-iso10646-1")
+      (set-frame-font "-*-JetBrains Mono-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1")
+    (set-frame-font "-*-JetBrains Mono-normal-normal-normal-*-26-*-*-*-m-0-iso10646-1")))
