@@ -148,9 +148,8 @@ creates a new one. Don't unnecessarily bother the user."
 (global-diff-hl-mode)
 
 (defun toggle-presentation-mode ()
+  "Toggle between 15 point and 26 point type in the current frame."
   (interactive)
-  (if (equal
-       (alist-get 'font (cadr (cadr (current-frame-configuration))))
-       "-*-JetBrains Mono-normal-normal-normal-*-26-*-*-*-m-0-iso10646-1")
-      (set-frame-font "-*-JetBrains Mono-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1")
-    (set-frame-font "-*-JetBrains Mono-normal-normal-normal-*-26-*-*-*-m-0-iso10646-1")))
+  (let* ((font (face-attribute 'default :font))
+         (size (font-get font :size)))
+    (set-frame-font (font-spec :size (if (= size 15) 26 15)))))
